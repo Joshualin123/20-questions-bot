@@ -7,18 +7,27 @@ export default function Home() {
 
   const textRef = React.useRef<HTMLTextAreaElement>(null);
 
+  const [loading, setLoading] = React.useState(false)
+
   const [messages, setMessages] = React.useState<string[]>(['Lets play 20 questions! Would you like to be guesser or answerer?']);
 
-  const getResp = () => {
+  const [animateDot, updateDots] = React.useState(".")
 
-    fetch("http://localhost:8000/polls/get-resp/", {
+  const [numDots, setDots] = React.useState(1)
+
+  const getResp = async () => {
+
+    setLoading(true)
+
+    const res = await fetch("http://localhost:8000/polls/get-resp/", {
       method: "GET",
     }) 
-      .then(res => res.json())
-      .then((data) => {
-        setMessages(prev => [...prev, data.message]); //add ai response to chat history
-    })
+    const data = await res.json()
+
+    setMessages(prev => [...prev, data.message]); //add ai response to chat history
   
+    setLoading(false)
+    
   };
 
   const postMsg = (msg: string) => {
@@ -28,7 +37,7 @@ export default function Home() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(msg),
+      body: JSON.stringify([msg, messages.length]),
     }) 
 
   };
@@ -53,6 +62,19 @@ export default function Home() {
     }
   }
 
+  React.useEffect(() => {
+    if (!loading) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setDots(prev => prev == 3 ? 1 : prev + 1)
+
+    }, 200);
+    return () => clearInterval(interval);
+
+  }, [loading]); 
+
   return (
     <main className="main">
       <h1 className="title">20 Questions</h1>
@@ -61,6 +83,8 @@ export default function Home() {
         {messages.map((message, idx) => 
           <div className="message" key={idx} style={{alignSelf: idx % 2 == 0 ? "flex-start" : "flex-end"}}>{message}</div>
         )}
+
+        {loading && (<div className="message" style={{alignSelf: "flex-start"}}>{".".repeat(numDots)}</div>)}
       </div>
 
       <div className="chat-input">
