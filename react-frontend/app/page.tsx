@@ -9,9 +9,7 @@ export default function Home() {
 
   const [loading, setLoading] = React.useState(false)
 
-  const [messages, setMessages] = React.useState<string[]>(['Lets play 20 questions! Would you like to be guesser or answerer?']);
-
-  const [animateDot, updateDots] = React.useState(".")
+  const [messages, setMessages] = React.useState<string[]>(['Lets play 20 questions! Would you like to be guesser (ask only yes/no questions) or answerer (replying to the yes/no questions)?']);
 
   const [numDots, setDots] = React.useState(1)
 
@@ -30,14 +28,14 @@ export default function Home() {
     
   };
 
-  const postMsg = (msg: string) => {
+  const postMsg = (messages : string[]) => {
 
     fetch("http://localhost:8000/polls/send-msg/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify([msg, messages.length]),
+      body: JSON.stringify([messages, messages.length]),
     }) 
 
   };
@@ -46,11 +44,15 @@ export default function Home() {
     
     if (textRef.current && textRef.current.value.trim() != "") {
       const newMessage = textRef.current.value;
-      setMessages(prev => [...prev, newMessage]);
+
+      const newMessagesList = [...messages, newMessage];
+
+      setMessages(newMessagesList);
       textRef.current.value = "";
 
-      postMsg(newMessage)
-      getResp()
+      postMsg(newMessagesList);
+      getResp();
+
     }
 
   }
@@ -69,7 +71,6 @@ export default function Home() {
 
     const interval = setInterval(() => {
       setDots(prev => prev == 3 ? 1 : prev + 1)
-
     }, 200);
     return () => clearInterval(interval);
 

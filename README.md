@@ -19,3 +19,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 Then, cd ../django-backend and run:
 
 python manage.py runserver
+
+If ai takes a long time to respond, the daily limit for the model has been exceeded, since a free model is being used.
