@@ -92,19 +92,18 @@ export default function chatBot() {
   }, [loading]); 
 
   return (
-    <main className="main">
+    <main className="chatMain">
       <h1 className="title">20 Questions</h1>
 
       <div className="chat">
         {messages.map((message, idx) => 
-          <div key={idx}>
-            <div className="message" style={{alignSelf: idx % 2 == 0 ? "flex-start" : "flex-end"}}>{message}</div>
-          </div>
+
+            <div key={idx} className="message" style={{alignSelf: idx % 2 == 0 ? "flex-start" : "flex-end"}}>{message}</div>
           
         )}
 
         {loading && (<div className="message" style={{alignSelf: "flex-start"}}>{".".repeat(numDots)}</div>)}
-        <div style={{alignSelf: "flex-end"}} ref={chatBottom}>dummy</div>
+        <div style={{alignSelf: "flex-end"}} ref={chatBottom}></div>
       </div>
 
       <div className="chat-input">
