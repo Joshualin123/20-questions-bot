@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Image from "next/image";
+import {useSearchParams} from 'next/navigation';
 
 export default function chatBot() {
 
@@ -12,6 +13,10 @@ export default function chatBot() {
   const [messages, setMessages] = React.useState<string[]>(['Lets play 20 questions! Would you like to be asker (ask only yes/no questions) or answerer (replying to the yes/no questions)?']);
 
   const [numDots, setDots] = React.useState(1)
+
+  const searchParams = useSearchParams();
+
+  const embeddedUser = searchParams.get("username")
 
   const chatBottom = React.useRef<null | HTMLDivElement>(null)
 
@@ -47,6 +52,35 @@ export default function chatBot() {
       },
       body: JSON.stringify([messages, messages.length]),
     }) 
+
+  };
+
+  const postUser = () => {
+
+    fetch("http://localhost:8000/polls/save-user-chat/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([embeddedUser]),
+    }) 
+
+  };
+
+  const getChatHistory = () => {
+
+    fetch("http://localhost:8000/polls/get-chat-history/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([embeddedUser]),
+    }) 
+    .then(data => {data.json})
+    .then(data => {
+      console.log(data)
+      
+    })
 
   };
 
@@ -91,9 +125,18 @@ export default function chatBot() {
 
   }, [loading]); 
 
+  React.useEffect(() => {
+
+    getChatHistory() //attempt to get existing chat upon entering chat page
+
+  }, [])
+
   return (
     <main className="chatMain">
-      <h1 className="title">20 Questions</h1>
+      <div className='chat-title-and-save-div'>
+        <h1 className="chat-title">20 Questions</h1>
+        <button className='chat-save-button' onClick={postUser}>Save</button>
+      </div>
 
       <div className="chat">
         {messages.map((message, idx) => 

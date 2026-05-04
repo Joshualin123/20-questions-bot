@@ -27,7 +27,7 @@ export default function loginPage() {
         .then(data => {
             
             if (data.status == "ok") {
-                router.push("/chat")
+                router.push(`/chat?username=${encodeURIComponent(user)}`)
                 setErrMsg("")
             } else {
                 setErrMsg(data.status)

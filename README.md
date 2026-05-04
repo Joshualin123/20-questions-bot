@@ -21,3 +21,5 @@ Then, cd ../django-backend and run:
 python manage.py runserver
 
 If ai takes a long time to respond, the daily limit for the model has been exceeded, since a free model is being used. If responses are bad, blame it on the fact that the model is a free one, therefore it is not very well tuned.
+
+Disclaimer: The login authentication might be a bit delayed
