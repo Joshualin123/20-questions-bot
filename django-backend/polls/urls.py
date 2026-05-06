@@ -11,5 +11,7 @@ urlpatterns = [
     path("create-user/", views.create_user, name="create_user"),
     path("save-user-chat/", views.save_user_chat, name="save_user"),
     path("get-chat-history/", views.get_chat_history, name="get_chat_history"),
+    path("clear-user-chat/", views.clear_user_chat, name="clear_user_chat"),
+
 ]   #defining api urls
 

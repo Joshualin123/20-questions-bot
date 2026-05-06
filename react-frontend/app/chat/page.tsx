@@ -10,7 +10,7 @@ export default function chatBot() {
 
   const [loading, setLoading] = React.useState(false)
 
-  const [messages, setMessages] = React.useState<string[]>(['Lets play 20 questions! Would you like to be asker (ask only yes/no questions) or answerer (replying to the yes/no questions)?']);
+  const [messages, setMessages] = React.useState<string[]>([]);
 
   const [numDots, setDots] = React.useState(1)
 
@@ -67,20 +67,41 @@ export default function chatBot() {
 
   };
 
-  const getChatHistory = () => {
+  const postClear = () => {
 
-    fetch("http://localhost:8000/polls/get-chat-history/", {
+    fetch("http://localhost:8000/polls/clear-user-chat/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify([embeddedUser]),
     }) 
-    .then(data => {data.json})
-    .then(data => {
-      console.log(data)
-      
-    })
+      setMessages(['Lets play 20 questions! Would you like to be asker (ask only yes/no questions) or answerer (replying to the yes/no questions)?'])
+
+    setLoading(true)
+  };
+
+  const getChatHistory = async () => {
+
+
+    const res = await fetch("http://localhost:8000/polls/get-chat-history/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([embeddedUser]),
+    }) 
+
+    const data = await res.json()
+    setMessages(data.message)
+  
+    if (data.message.length == 0) { //if empty history then initialize
+      setMessages(['Lets play 20 questions! Would you like to be asker (ask only yes/no questions) or answerer (replying to the yes/no questions)?'])
+    }
+
+    if (data.message.length % 2 == 0 && data.message.length != 0) {
+      getResp()
+    }
 
   };
 
@@ -111,7 +132,7 @@ export default function chatBot() {
 
   }
 
-  React.useEffect(() => {
+  React.useEffect(() => { //computing animated loading dots
 
     if (!loading) {
       return;
@@ -136,6 +157,7 @@ export default function chatBot() {
       <div className='chat-title-and-save-div'>
         <h1 className="chat-title">20 Questions</h1>
         <button className='chat-save-button' onClick={postUser}>Save</button>
+        <button className='chat-save-button' onClick={postClear}>Clear</button>
       </div>
 
       <div className="chat">

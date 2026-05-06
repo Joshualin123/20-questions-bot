@@ -11,6 +11,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.utils import timezone
+import ast
 
 # Create your views here.
 CORS_ALLOW_ALL_ORIGINS = True
@@ -129,14 +130,27 @@ def get_chat_history(request):
 
             user_history = list(chat_history.objects.filter(username=username).values("message"))
 
-            print(f'Existing user history pulled: {user_history}')
-            return JsonResponse(user_history, safe=False)
+            print(f'Existing user history pulled: {user_history[0]["message"]}')
+            return JsonResponse({"message": ast.literal_eval(user_history[0]["message"])})
 
         except chat_history.DoesNotExist:
-            return JsonResponse([], safe=False)
+            return JsonResponse({"message": []})
 
-        return JsonResponse([], safe=False)
+        return JsonResponse({"message": []})
 
+@csrf_exempt
+@require_http_methods(["POST"])
+def clear_user_chat(request):
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+        username = data[0]
+        
+        chat_history.objects.filter(username=username).delete()
+
+        print("Deleted user history")
+        
+        return JsonResponse({"status": "ok"})
 
 class chat_history(models.Model):
     username = models.CharField(max_length=20)
