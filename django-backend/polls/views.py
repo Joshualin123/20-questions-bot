@@ -155,7 +155,7 @@ def clear_user_chat(request):
 class chat_history(models.Model):
     username = models.CharField(max_length=20)
     message = models.CharField()
-    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.username
